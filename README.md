@@ -104,7 +104,7 @@ web 界面下，dsh 并不在宿主层加载指令文件：`dsh-web-app` 把 `ag
 而 preset 是**整份 composition**，没有 patch 叠加机制。
 
 `sync-preset` 的做法是：读取当前安装的 `standard` preset，**只替换** `agent-instructions` 一行、
-追加 `/init` 一行，其余原样保留，输出到 `$DSH_HOME/.agent-presets/dsh-compat/`。
+追加 `/init` 一行，其余原样保留，输出到 `$DSH_HOME/.agent-presets/imitate-claude/`。
 上游 dsh 升级后重跑一次即可同步，不需要手工维护 254 行副本。
 
 > 只有 web 界面需要这一步。TUI / headless 等表面从 bundle patch 直接生效。
@@ -125,7 +125,11 @@ web 界面下，dsh 并不在宿主层加载指令文件：`dsh-web-app` 把 `ag
 ```
 
 - 已存在时不覆盖（幂等）；`/init --force` 才重建。
-- 只有本次确实写出了 `DSH.md` 才会让模型去补全内容，已初始化的项目重复执行不烧 token。
+- **已有项目跑 `/init` 会按现状分流**：
+  - `DSH.md` 不存在 → 建骨架并让模型根据项目补全；
+  - `DSH.md` 还是占位骨架 → **不覆盖文件，让模型根据项目填写内容**（判定依据：删掉 HTML 注释后只剩标题即视为未填写）；
+  - `DSH.md` 已有实质内容 → 不动，也不触发补全，不烧 token。
+- 模型补全时被要求：只依据项目真实文件（README、包清单、构建脚本），命令必须来自真实配置，不要发明。
 - 发现已有 `CLAUDE.md` / `.claude/` 时会给出提示，但**不修改**它们。
 
 ### `@path` 导入

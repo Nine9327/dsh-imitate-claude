@@ -6,12 +6,13 @@
  */
 
 import assert from 'node:assert/strict'
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { test } from 'node:test'
 
 import { apply as applyInit } from '../../command-init/src/index.js'
+import { renderInstructionSkeleton } from '../../core/src/scaffold.js'
 
 /**
  * 造一个临时的假 ctx，记录注册与注入。
@@ -96,7 +97,6 @@ test('/init 幂等：已存在时不覆盖，也不重复烧 token', () => {
   withProject((root) => {
     mkdirSync(join(root, '.dsh'), { recursive: true })
     writeFileSync(join(root, '.dsh', 'DSH.md'), 'USER CONTENT', 'utf8')
-
     const { ctx, commands } = makeFakeCtx()
     applyInit(ctx)
     const agent = makeAgent(root)
@@ -118,6 +118,48 @@ test('/init --force 允许重建', () => {
 
     const result = commands[0].handler({ agent, rawInput: '--force', attachments: [] })
     assert.equal(result.kind, 'success')
+  })
+})
+
+test('已有项目但 DSH.md 仍是骨架：不覆盖文件，但触发补全', () => {
+  withProject((root) => {
+    mkdirSync(join(root, '.dsh'), { recursive: true })
+    // 用真实的骨架渲染器写出占位文件，模拟"跑过 /init 但没填写"的项目。
+    writeFileSync(
+      join(root, '.dsh', 'DSH.md'),
+      renderInstructionSkeleton({ projectName: 'legacy-project' }),
+      'utf8',
+    )
+
+    const { ctx, commands } = makeFakeCtx()
+    applyInit(ctx)
+    const agent = makeAgent(root)
+
+    const result = commands[0].handler({ agent, rawInput: '', attachments: [] })
+
+    assert.equal(result.kind, 'success')
+    // 文件未被覆盖。
+    const after = readFileSync(join(root, '.dsh', 'DSH.md'), 'utf8')
+    assert.match(after, /legacy-project/)
+    // 但补全被触发了，且提示语点明这是"补全骨架"而非"新建"。
+    assert.equal(agent._followed.length, 1)
+    assert.match(result.text, /仍是初始骨架/)
+    assert.match(agent._followed[0].content[0].text, /DSH\.md/)
+  })
+})
+
+test('已有项目且 DSH.md 已填写：不覆盖也不触发补全', () => {
+  withProject((root) => {
+    mkdirSync(join(root, '.dsh'), { recursive: true })
+    writeFileSync(join(root, '.dsh', 'DSH.md'), '# legacy\n\n用 pnpm test 跑测试。\n', 'utf8')
+
+    const { ctx, commands } = makeFakeCtx()
+    applyInit(ctx)
+    const agent = makeAgent(root)
+
+    const result = commands[0].handler({ agent, rawInput: '', attachments: [] })
+    assert.equal(result.kind, 'success')
+    assert.equal(agent._followed.length, 0)
   })
 })
 

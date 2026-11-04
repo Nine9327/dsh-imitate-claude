@@ -68,6 +68,35 @@ export function renderSettingsSkeleton() {
 }
 
 /**
+ * 判断一份 DSH.md 内容是否仍是 `/init` 生成的未填写骨架。
+ *
+ * 判据：移除全部 HTML 注释（骨架的占位说明都在注释里）后，
+ * 剩余内容只有标题行与空白，没有任何实质内容。
+ *
+ * 刻意保守：只有确定是骨架时才返回 true；任何一点实质内容（包括一句自然语言）
+ * 都视为"用户已填写"，后续流程会尊重它而不覆盖、不重复触发补全。
+ *
+ * @param {string} content - 文件内容。
+ * @returns {boolean}
+ */
+export function isInstructionSkeleton(content) {
+  if (typeof content !== 'string') return false
+
+  const withoutComments = content
+    .replace(/<!--[\s\S]*?-->/g, '')
+    .replace(/\r/g, '')
+
+  // 逐行过滤：保留标题，丢弃空白；有任何其它非空行即视为已填写。
+  const substantive = withoutComments
+    .split('\n')
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0)
+    .filter((line) => !line.startsWith('#'))
+
+  return substantive.length === 0
+}
+
+/**
  * 初始化 `.dsh` 项目配置。
  *
  * 语义与 Claude 的 `/init` 对齐：已存在时不覆盖，除非显式 `force`。

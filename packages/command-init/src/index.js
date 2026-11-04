@@ -11,7 +11,9 @@
  */
 
 import { findProjectRoot, hasDshConfig } from '../../core/src/discover.js'
-import { scaffoldProject } from '../../core/src/scaffold.js'
+import { isInstructionSkeleton, scaffoldProject } from '../../core/src/scaffold.js'
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
 
 /** 插件名。 */
 export const name = 'imitate-claude-command-init'
@@ -43,13 +45,14 @@ function parseArgs(rawInput) {
  */
 function buildCompletionPrompt(projectRoot) {
   return [
-    '刚刚执行了 /init，已在项目中创建 .dsh/ 目录骨架（.dsh/DSH.md 为占位内容）。',
+    '刚刚执行了 /init，项目中的 .dsh/DSH.md 目前是占位骨架（各章节下是 HTML 注释占位）。',
     '',
-    '请现在分析这个仓库，并把 .dsh/DSH.md 补全为一份真正有用的工作区指令文件：',
-    '- 先读取现有文件（README、包清单、目录结构、构建与测试配置）再动笔，不要臆测；',
+    '请分析这个仓库，把 .dsh/DSH.md 补全为一份真正有用的工作区指令文件：',
+    '- 先读取真实文件（README、包清单、目录结构、构建与测试配置、CI 脚本）再动笔，不要臆测；',
     '- 保留文件已有的标题与章节结构，只替换注释占位处的内容；',
     '- 覆盖：项目用途、关键目录职责、构建/测试/代码风格约定、容易踩坑的地方；',
-    '- 只写对后续会话有实际指导意义的约定，不要复述显而易见的目录树。',
+    '- 只写对后续会话有实际指导意义的约定，不要复述显而易见的目录树；',
+    '- 命令必须来自项目的真实配置（如 package.json scripts），不要发明不存在的命令。',
     '',
     `项目根：${projectRoot}`,
     '',
@@ -86,6 +89,19 @@ export function apply(ctx, config = {}) {
         const alreadyExists = hasDshConfig(projectRoot)
         const result = scaffoldProject({ projectRoot, force })
 
+        // 关键分支：项目里已有 .dsh/，但 DSH.md 仍是 /init 的占位骨架。
+        // 此时用户需要的是"根据项目填写内容"，而不是重建结构——
+        // 所以不覆盖文件，只触发模型补全。这正是已有项目跑 /init 的主场景。
+        const instructionPath = join(projectRoot, '.dsh', 'DSH.md')
+        let skeletonNeedsFilling = false
+        if (result.skipped.some((path) => path.endsWith('DSH.md')) && !force) {
+          try {
+            skeletonNeedsFilling = isInstructionSkeleton(readFileSync(instructionPath, 'utf8'))
+          } catch {
+            skeletonNeedsFilling = false
+          }
+        }
+
         const lines = []
         if (alreadyExists && !force) {
           lines.push(`.dsh/ 已存在，未覆盖已有内容（如需重建请用 /init --force）。`)
@@ -103,11 +119,17 @@ export function apply(ctx, config = {}) {
           lines.push('', `提示：${warning}`)
         }
 
-        // 只有在本次确实写出了 DSH.md 时才触发模型补全，
-        // 避免已初始化项目每跑一次 /init 就烧一轮 token。
+        // 触发模型补全的两种情况：
+        //   a. 本次新建了 DSH.md（骨架刚落地）；
+        //   b. DSH.md 已存在但仍是未填写的骨架（已有项目跑 /init 的主场景）。
+        // 已填写的文件永远不触发，避免覆盖用户内容和重复烧 token。
         const wroteInstruction = result.created.some((path) => path.endsWith('DSH.md'))
-        if (wroteInstruction) {
-          lines.push('', '正在让模型补全 .dsh/DSH.md 的内容……')
+        if (wroteInstruction || skeletonNeedsFilling) {
+          if (skeletonNeedsFilling) {
+            lines.push('', '.dsh/DSH.md 仍是初始骨架，正在根据项目内容补全……')
+          } else {
+            lines.push('', '正在让模型补全 .dsh/DSH.md 的内容……')
+          }
           invocation.agent.followup(
             createTextMessage(buildCompletionPrompt(projectRoot)),
           )
