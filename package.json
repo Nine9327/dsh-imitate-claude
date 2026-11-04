@@ -1,13 +1,37 @@
 {
-  "name": "dsh-claude-compat-repo",
-  "private": true,
+  "name": "dsh-claude-compat",
+  "version": "0.1.0",
   "description": "项目级 .dsh 约定：DSH.md、@import、.dsh/rules 与 /init（Claude Code 兼容）",
   "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./instructions": "./lib/instructions/index.js",
+    "./command-init": "./lib/command-init/index.js",
+    "./core": "./lib/core/index.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib",
+    "cordis.patch.yml",
+    "README.md"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
   "scripts": {
     "build": "node scripts/build-bundle.mjs",
-    "prepare": "node scripts/build-bundle.mjs",
-    "test": "node test/acceptance.mjs",
-    "install:plugin": "node scripts/install.mjs"
+    "test": "node test/acceptance.mjs"
   },
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "claude-code",
+    "agents-md",
+    "instructions"
+  ],
   "license": "MIT"
 }

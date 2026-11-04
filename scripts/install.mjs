@@ -18,11 +18,12 @@ import { existsSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import { generatePreset } from '../packages/bundle/lib/index.js'
+import { generatePreset } from '../lib/index.js'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const repoRoot = resolve(here, '..')
-const bundleDir = join(repoRoot, 'packages', 'bundle')
+// 仓库根就是可安装的插件包本身。
+const bundleDir = repoRoot
 
 /**
  * 解析命令行参数。

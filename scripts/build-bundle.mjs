@@ -17,7 +17,9 @@ import { fileURLToPath } from 'node:url'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const repoRoot = resolve(here, '..')
-const outLib = join(repoRoot, 'packages', 'bundle', 'lib')
+// 输出到仓库根的 lib/：仓库根**就是**可安装的插件包，
+// 这样 `pnpm add <git url>` 装到的才是带 dsh.bundle.patch 的包本身。
+const outLib = join(repoRoot, 'lib')
 
 /** 源包 → 产物子目录。 */
 const SOURCES = [
