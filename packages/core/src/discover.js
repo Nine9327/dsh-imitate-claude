@@ -3,7 +3,7 @@
  *
  * 所有写操作都必须先过 {@link assertInsideRoot}，这是防目录逃逸的单点收口。
  *
- * @module dsh-claude-compat/discover
+ * @module dsh-imitate-claude/discover
  */
 
 import { existsSync, statSync } from 'node:fs'
@@ -69,7 +69,7 @@ export function assertInsideRoot(root, target) {
   const rel = relative(rootAbs, targetAbs)
   if (rel === '' || rel === '..' || rel.startsWith(`..${sep}`) || isAbsolute(rel)) {
     throw new Error(
-      `dsh-claude-compat: refusing to write outside the project root (${rootAbs}): ${targetAbs}`,
+      `dsh-imitate-claude: refusing to write outside the project root (${rootAbs}): ${targetAbs}`,
     )
   }
   return targetAbs

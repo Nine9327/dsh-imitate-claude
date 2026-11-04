@@ -1,4 +1,4 @@
-# dsh-claude-compat 插件计划（项目级 .dsh 约定 + Claude Code 兼容）
+# dsh-imitate-claude 插件计划（项目级 .dsh 约定 + Claude Code 兼容）
 
 > 状态：**P0–P2 已实现，35 个单元测试 + 9 项端到端验收全部通过**（详见 README.md）
 > 目标读者：实现者、评审者
@@ -191,7 +191,7 @@ export { apply, inject, name }
 | **B. 自建 preset**（复制 standard 改一行） | web（即当前使用场景） | 需跟随上游同步 254 行 |
 | **C. A+B 并存** | 全表面 | 两套要都维护 |
 
-**本计划采用 C**，但把 B 的整份复制改为**生成式**：提供 `dsh-claude-compat sync-preset` 命令，从当前安装的 `standard/agent.cordis.yml` 读取、只替换 `agent-instructions` 行并追加本插件行，输出到 `.agent-presets/dsh-compat/`。上游升级后重跑一次即可，不手工维护副本。
+**本计划采用 C**，但把 B 的整份复制改为**生成式**：提供 `dsh-imitate-claude sync-preset` 命令，从当前安装的 `standard/agent.cordis.yml` 读取、只替换 `agent-instructions` 行并追加本插件行，输出到 `.agent-presets/dsh-compat/`。上游升级后重跑一次即可，不手工维护副本。
 
 ### (4) 其它已核实的约束
 
@@ -249,7 +249,7 @@ export { apply, inject, name }
 ### 4.2 插件拆分
 
 ```
-dsh-claude-compat/                 (monorepo, pnpm workspace)
+dsh-imitate-claude/                 (monorepo, pnpm workspace)
 ├── packages/
 │   ├── core/                       @dsh-compat/core
 │   │   ├── src/naming.ts           命名映射表（§3）唯一实现

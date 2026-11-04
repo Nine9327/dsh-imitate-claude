@@ -1,23 +1,23 @@
 #!/usr/bin/env node
 /**
- * `dsh-claude-compat` 命令行。
+ * `dsh-imitate-claude` 命令行。
  *
  * 目前只有一个子命令：`sync-preset` —— 从当前安装的 standard preset
  * 生成带 .dsh 指令支持的 agent preset。上游升级后重跑即可。
  *
- * @module dsh-claude-compat/cli
+ * @module dsh-imitate-claude/cli
  */
 
 import { homedir } from 'node:os'
 import { join } from 'node:path'
 
-import { generatePreset, GENERATED_PRESET_ID } from 'dsh-claude-compat-core'
+import { generatePreset, GENERATED_PRESET_ID } from 'dsh-imitate-claude-core'
 
 const USAGE = [
-  'dsh-claude-compat — 让 dsh 支持项目级 .dsh 约定',
+  'dsh-imitate-claude — 让 dsh 支持项目级 .dsh 约定',
   '',
   '用法：',
-  '  dsh-claude-compat sync-preset [选项]',
+  '  dsh-imitate-claude sync-preset [选项]',
   '',
   '选项：',
   '  --dsh-home <path>    DSH home 目录（默认 $DSH_HOME 或 ~/.dsh）',
@@ -76,7 +76,7 @@ function runSyncPreset(flags) {
   const force = flags.force === true
 
   if (rawMax !== undefined && (!Number.isFinite(rawMax) || rawMax <= 0)) {
-    process.stderr.write('dsh-claude-compat: --max-bytes must be a positive number\n')
+    process.stderr.write('dsh-imitate-claude: --max-bytes must be a positive number\n')
     return 2
   }
 
@@ -100,7 +100,7 @@ function runSyncPreset(flags) {
     return 0
   } catch (error) {
     const detail = error instanceof Error ? error.message : String(error)
-    process.stderr.write('dsh-claude-compat: ' + detail + '\n')
+    process.stderr.write('dsh-imitate-claude: ' + detail + '\n')
     return 1
   }
 }
@@ -126,7 +126,7 @@ function main() {
     return runSyncPreset(flags)
   }
 
-  process.stderr.write('dsh-claude-compat: unknown command "' + command + '"\n\n' + USAGE)
+  process.stderr.write('dsh-imitate-claude: unknown command "' + command + '"\n\n' + USAGE)
   return 2
 }
 

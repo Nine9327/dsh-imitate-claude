@@ -99,7 +99,7 @@ async function check(label, body) {
   }
 }
 
-console.log('dsh-claude-compat 端到端验收\n')
+console.log('dsh-imitate-claude 端到端验收\n')
 
 await check('empty：空项目不产生任何注入', async () => {
   const { text, files } = await runFixture('empty')

@@ -1,5 +1,5 @@
 {
-  "name": "dsh-claude-compat-command-init",
+  "name": "dsh-imitate-claude-command-init",
   "version": "0.1.0",
   "private": true,
   "description": "/init 命令：初始化 .dsh 项目配置目录",
@@ -9,7 +9,7 @@
     ".": "./src/index.js"
   },
   "dependencies": {
-    "dsh-claude-compat-core": "workspace:*"
+    "dsh-imitate-claude-core": "workspace:*"
   },
   "peerDependencies": {
     "@deepseek-ai/dsh-commands": "*"

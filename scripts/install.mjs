@@ -1,5 +1,5 @@
 /**
- * 把 `dsh-dsh-claude-compat` 装进指定 profile 的安装脚本。
+ * 把 `dsh-imitate-claude` 装进指定 profile 的安装脚本。
  *
  * 为什么不直接点市场安装：dshmarket 的 `/dsh-market/install` 会先查精选
  * registry，任何不在 `awesome-dsh-plugin` 列表里的来源一律 400
@@ -75,7 +75,7 @@ if (profile === null) {
     process.stderr.write('bundle 尚未构建，先运行：node scripts/build-bundle.mjs\n')
     process.exitCode = 1
   } else {
-    process.stdout.write(`安装 dsh-claude-compat 到 profile "${profile}"\n`)
+    process.stdout.write(`安装 dsh-imitate-claude 到 profile "${profile}"\n`)
     process.stdout.write(`  DSH_HOME = ${dshHome}\n\n`)
 
     // 与 dshmarket 底层同一条 pnpm 链路：装好后 bundle 会自动进入 patch 栈。
@@ -101,7 +101,7 @@ if (profile === null) {
         '',
         '下一步：',
         '  1. 重启 dsh；',
-        '  2. web 界面：在插件页确认 dsh-claude-compat 已列出，并在会话里把',
+        '  2. web 界面：在插件页确认 dsh-imitate-claude 已列出，并在会话里把',
         '     agent preset 切到「兼容模式」（由 --preset 生成）。',
         '',
         '说明：市场界面不能装本地来源（只接受精选 registry），',

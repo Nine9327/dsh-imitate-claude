@@ -31,7 +31,7 @@ const SOURCES = [
 /** 需要改写的模块引用。 */
 const REWRITES = [
   // core 的入口被其它层引用
-  { pattern: /from 'dsh-claude-compat-core'/g, replace: (depth) => `from '${'../'.repeat(depth)}core/index.js'` },
+  { pattern: /from 'dsh-imitate-claude-core'/g, replace: (depth) => `from '${'../'.repeat(depth)}core/index.js'` },
   // 旧的跨包相对路径（源码里曾有一版）
   { pattern: /from '\.\.\/\.\.\/core\/src\/([a-z]+\.js)'/g, replace: (_depth, file) => `from '../core/${file}'` },
 ]
@@ -48,13 +48,13 @@ function depthFromLib(filePath) {
 
 /** 包入口内容：只做能力再导出。 */
 const PACKAGE_ENTRY = `/**
- * \`dsh-claude-compat\` 包入口。
+ * \`dsh-imitate-claude\` 包入口。
  *
  * 本包是一个 **bundle**：真正被 dsh 挂载的是 \`cordis.patch.yml\` 里声明的两行
  * （\`/instructions\` 与 \`/command-init\`），而不是这个文件。
  * 这里只做能力再导出，方便外部按包名引用核心工具函数。
  *
- * @module dsh-claude-compat
+ * @module dsh-imitate-claude
  */
 
 export {

@@ -1,5 +1,5 @@
 {
-  "name": "dsh-claude-compat",
+  "name": "dsh-imitate-claude",
   "version": "0.1.0",
   "description": "项目级 .dsh 约定：DSH.md、@import、.dsh/rules 与 /init（Claude Code 兼容）",
   "type": "module",

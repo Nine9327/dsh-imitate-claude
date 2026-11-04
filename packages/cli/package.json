@@ -1,14 +1,14 @@
 {
-  "name": "dsh-claude-compat-cli",
+  "name": "dsh-imitate-claude-cli",
   "version": "0.1.0",
   "private": true,
   "description": "命令行工具：生成 dsh-compat agent preset",
   "type": "module",
   "bin": {
-    "dsh-claude-compat": "bin.js"
+    "dsh-imitate-claude": "bin.js"
   },
   "dependencies": {
-    "dsh-claude-compat-core": "workspace:*"
+    "dsh-imitate-claude-core": "workspace:*"
   },
   "license": "MIT"
 }

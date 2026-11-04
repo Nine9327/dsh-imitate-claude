@@ -7,7 +7,7 @@
  *
  * 上游升级后重跑一次即可，不需要人工比对。
  *
- * @module dsh-claude-compat/preset
+ * @module dsh-imitate-claude/preset
  */
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
@@ -15,7 +15,7 @@ import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 /** 生成的 preset 目录名（放在 `<dshHome>/.agent-presets/` 下）。 */
-export const GENERATED_PRESET_ID = 'dsh-compat'
+export const GENERATED_PRESET_ID = 'imitate-claude'
 
 /** 需要被替换掉的插件行 id。 */
 const REPLACED_ROW_ID = 'agent-instructions'
@@ -32,7 +32,7 @@ const REPLACED_ROW_ID = 'agent-instructions'
 export function resolveSourcePreset(explicitPath) {
   if (explicitPath !== undefined) {
     if (!existsSync(explicitPath)) {
-      throw new Error(`dsh-claude-compat: source preset not found: ${explicitPath}`)
+      throw new Error(`dsh-imitate-claude: source preset not found: ${explicitPath}`)
     }
     return explicitPath
   }
@@ -83,7 +83,7 @@ export function resolveSourcePreset(explicitPath) {
   }
 
   throw new Error(
-    'dsh-claude-compat: cannot locate the installed standard agent preset. ' +
+    'dsh-imitate-claude: cannot locate the installed standard agent preset. ' +
       'Pass an explicit path to agent.cordis.yml.',
   )
 }
@@ -156,8 +156,8 @@ export function buildPresetText(options) {
     maxBytes = 65536,
     // 指向安装后的 bundle 子路径：preset 在 profile 里解析模块，
     // 用包名比用绝对路径稳定，包被移动或重装都不用重新生成。
-    pluginSpecifier = 'dsh-claude-compat/instructions',
-    commandSpecifier = 'dsh-claude-compat/command-init',
+    pluginSpecifier = 'dsh-imitate-claude/instructions',
+    commandSpecifier = 'dsh-imitate-claude/command-init',
   } = options
 
   const lines = sourceText.split(/\r?\n/)
@@ -172,7 +172,7 @@ export function buildPresetText(options) {
   }
 
   const replacement = [
-    '# Replaced by dsh-claude-compat: loads .dsh/DSH.md, @import chains, and rules dirs.',
+    '# Replaced by dsh-imitate-claude: loads .dsh/DSH.md, @import chains, and rules dirs.',
     `- id: ${REPLACED_ROW_ID}`,
     `  name: '${pluginSpecifier}'`,
     '  config:',
@@ -181,7 +181,7 @@ export function buildPresetText(options) {
     '    maxImportDepth: 5',
     '',
     '# Project-level /init for .dsh/ (Claude Code parity).',
-    '- id: claude-compat-command-init',
+    '- id: imitate-claude-command-init',
     `  name: '${commandSpecifier}'`,
   ]
 
@@ -219,7 +219,7 @@ export function generatePreset(options) {
 
   const built = buildPresetText({ sourceText, maxBytes })
   if (!built.changed) {
-    throw new Error(`dsh-claude-compat: ${built.reason ?? 'preset generation produced no change'}`)
+    throw new Error(`dsh-imitate-claude: ${built.reason ?? 'preset generation produced no change'}`)
   }
 
   const outDir = join(dshHome, '.agent-presets', presetId)
@@ -228,7 +228,7 @@ export function generatePreset(options) {
 
   if (existsSync(compositionPath) && !force) {
     throw new Error(
-      `dsh-claude-compat: preset already exists at ${compositionPath}; pass --force to overwrite`,
+      `dsh-imitate-claude: preset already exists at ${compositionPath}; pass --force to overwrite`,
     )
   }
 

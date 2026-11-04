@@ -4,7 +4,7 @@
  * 这是全项目唯一的事实来源。任何地方需要知道"某个 claude 名字在 dsh 里叫什么"，
  * 都从这里取，不要硬编码字面量。
  *
- * @module dsh-claude-compat/naming
+ * @module dsh-imitate-claude/naming
  */
 
 /** 主指令文件名（Claude: CLAUDE.md → dsh: DSH.md）。 */

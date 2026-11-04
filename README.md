@@ -1,4 +1,4 @@
-# dsh-claude-compat
+# dsh-imitate-claude
 
 让 dsh 支持项目级的 **Claude Code 约定**，但所有命名改为 `dsh`：`CLAUDE.md` → `DSH.md`，`.claude/` → `.dsh/`。
 
@@ -28,7 +28,7 @@ dsh 内置的指令加载器默认已认识 `CLAUDE.md`，但有三样做不到�
 cd "$env:USERPROFILE\.dsh\profiles\desktop"
 
 # 安装
-pnpm add https://github.com/Nine9327/dsh-claude-compat.git
+pnpm add https://github.com/Nine9327/dsh-imitate-claude.git
 ```
 
 **然后必须手动把包名加进 `dsh.profile.bundles`**，这一步不能省：
@@ -41,7 +41,7 @@ pnpm add https://github.com/Nine9327/dsh-claude-compat.git
       "@deepseek-ai/dsh-base",
       "@deepseek-ai/dsh-web-app",
       // ...
-      "dsh-claude-compat"   // ← 加这一行
+      "dsh-imitate-claude"   // ← 加这一行
     ]
   }
 }
@@ -86,7 +86,7 @@ node scripts/install.mjs --profile <name> --preset
 | 市场读什么 | 本插件提供什么 |
 |---|---|
 | `package.json` 的 `dsh.bundle.patch` | `./cordis.patch.yml` |
-| patch 里的 `insert` 行 id | `claude-compat-instructions`、`claude-compat-command-init` |
+| patch 里的 `insert` 行 id | `imitate-claude-instructions`、`imitate-claude-command-init` |
 
 
 （见 `dshmarket/lib/patch.js:264` `rowIdsForPackage`）

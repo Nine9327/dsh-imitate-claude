@@ -34,7 +34,7 @@ const SOURCE = [
 test('替换 agent-instructions 行为我们的实现', () => {
   const result = buildPresetText({ sourceText: SOURCE })
   assert.equal(result.changed, true)
-  assert.match(result.text, /name: 'dsh-claude-compat\/instructions'/)
+  assert.match(result.text, /name: 'dsh-imitate-claude\/instructions'/)
   assert.ok(!result.text.includes("name: '@deepseek-ai/dsh-agent-instructions'"))
 })
 
@@ -59,8 +59,8 @@ test('保留未涉及的行与顺序', () => {
 
 test('追加 /init 命令行', () => {
   const result = buildPresetText({ sourceText: SOURCE })
-  assert.match(result.text, /- id: claude-compat-command-init/)
-  assert.match(result.text, /name: 'dsh-claude-compat\/command-init'/)
+  assert.match(result.text, /- id: imitate-claude-command-init/)
+  assert.match(result.text, /name: 'dsh-imitate-claude\/command-init'/)
 })
 
 test('源文件缺少目标行时明确报告而不是静默通过', () => {

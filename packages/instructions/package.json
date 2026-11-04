@@ -1,5 +1,5 @@
 {
-  "name": "dsh-claude-compat-instructions",
+  "name": "dsh-imitate-claude-instructions",
   "version": "0.1.0",
   "private": true,
   "description": "旁挂式 .dsh 指令加载：支持 .dsh/DSH.md、@import 与 rules",
@@ -9,7 +9,7 @@
     ".": "./src/index.js"
   },
   "dependencies": {
-    "dsh-claude-compat-core": "workspace:*"
+    "dsh-imitate-claude-core": "workspace:*"
   },
   "peerDependencies": {
     "@deepseek-ai/dsh-agent-instructions": "*",

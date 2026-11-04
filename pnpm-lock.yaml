@@ -10,13 +10,13 @@ importers:
 
   packages/cli:
     dependencies:
-      dsh-claude-compat-core:
+      dsh-imitate-claude-core:
         specifier: workspace:*
         version: link:../core
 
   packages/command-init:
     dependencies:
-      dsh-claude-compat-core:
+      dsh-imitate-claude-core:
         specifier: workspace:*
         version: link:../core
 
@@ -24,6 +24,6 @@ importers:
 
   packages/instructions:
     dependencies:
-      dsh-claude-compat-core:
+      dsh-imitate-claude-core:
         specifier: workspace:*
         version: link:../core
