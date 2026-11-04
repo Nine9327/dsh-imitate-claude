@@ -25,17 +25,26 @@ const repoRoot = resolve(here, '..')
  * @returns {Promise<Function>}
  */
 async function getRenderer() {
+  let mod
   try {
-    const mod = await import('@deepseek-ai/dsh-agent-instructions')
-    return (files, maxBytes) => mod.renderWorkspaceContext(files, { maxBytes }).text
+    mod = await import('@deepseek-ai/dsh-agent-instructions')
   } catch {
-    return (files, maxBytes) => {
-      const body = files
-        .flatMap((f) => [`Instructions from: ${f.displayPath}`, '', f.content, ''])
-        .join('\n')
-      const text = `<system-reminder>\n${body}\n</system-reminder>`
-      return Buffer.byteLength(text, 'utf8') <= maxBytes ? text : text.slice(0, maxBytes)
-    }
+    mod = undefined
+  }
+
+  // 跨版本：0.2.1+ 为 renderAgentInstructions，0.1.x 为 renderWorkspaceContext。
+  for (const key of ['renderAgentInstructions', 'renderWorkspaceContext']) {
+    const fn = mod?.[key]
+    if (typeof fn !== 'function') continue
+    return (files, maxBytes) => fn(files, { maxBytes }).text
+  }
+
+  return (files, maxBytes) => {
+    const body = files
+      .flatMap((f) => [`Instructions from: ${f.displayPath}`, '', f.content, ''])
+      .join('\n')
+    const text = `<system-reminder>\n${body}\n</system-reminder>`
+    return Buffer.byteLength(text, 'utf8') <= maxBytes ? text : text.slice(0, maxBytes)
   }
 }
 
