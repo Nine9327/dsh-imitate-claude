@@ -23,3 +23,11 @@
     # 人类命令 /init：在项目里创建 .dsh/ 骨架。
     - id: imitate-claude-command-init
       name: 'dsh-imitate-claude/command-init'
+
+    # 项目级命令：.dsh/commands/*.md → agent 作用域斜杠命令。
+    # 挂载发生在 agent/created 且仅当项目含 .dsh/commands 时；
+    # 经 agent.ctx.plugin 注册，只对本项目 agent 可见，不污染全局。
+    - id: imitate-claude-project-commands
+      name: 'dsh-imitate-claude/project-commands'
+      config:
+        watch: true

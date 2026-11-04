@@ -26,6 +26,7 @@ const SOURCES = [
   { from: join(repoRoot, 'packages', 'core', 'src'), to: join(outLib, 'core') },
   { from: join(repoRoot, 'packages', 'instructions', 'src'), to: join(outLib, 'instructions') },
   { from: join(repoRoot, 'packages', 'command-init', 'src'), to: join(outLib, 'command-init') },
+  { from: join(repoRoot, 'packages', 'project-commands', 'src'), to: join(outLib, 'project-commands') },
 ]
 
 /** 需要改写的模块引用。 */

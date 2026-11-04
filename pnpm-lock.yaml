@@ -27,3 +27,9 @@ importers:
       dsh-imitate-claude-core:
         specifier: workspace:*
         version: link:../core
+
+  packages/project-commands:
+    dependencies:
+      dsh-imitate-claude-core:
+        specifier: workspace:*
+        version: link:../core

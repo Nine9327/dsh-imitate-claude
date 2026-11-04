@@ -1,0 +1,15 @@
+{
+  "name": "dsh-imitate-claude-project-commands",
+  "version": "0.1.0",
+  "private": true,
+  "description": "项目级 .dsh/commands 斜杠命令（agent 作用域）",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "dependencies": {
+    "dsh-imitate-claude-core": "workspace:*"
+  },
+  "license": "MIT"
+}

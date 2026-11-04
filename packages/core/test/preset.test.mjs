@@ -63,6 +63,13 @@ test('追加 /init 命令行', () => {
   assert.match(result.text, /name: 'dsh-imitate-claude\/command-init'/)
 })
 
+test('追加项目命令行', () => {
+  const result = buildPresetText({ sourceText: SOURCE })
+  assert.match(result.text, /- id: imitate-claude-project-commands/)
+  assert.match(result.text, /name: 'dsh-imitate-claude\/project-commands'/)
+  assert.match(result.text, /watch: true/)
+})
+
 test('源文件缺少目标行时明确报告而不是静默通过', () => {
   const result = buildPresetText({ sourceText: '- id: persona\n  name: x\n' })
   assert.equal(result.changed, false)

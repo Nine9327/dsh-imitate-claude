@@ -8,6 +8,7 @@
     ".": "./lib/index.js",
     "./instructions": "./lib/instructions/index.js",
     "./command-init": "./lib/command-init/index.js",
+    "./project-commands": "./lib/project-commands/index.js",
     "./core": "./lib/core/index.js",
     "./cordis.patch.yml": "./cordis.patch.yml",
     "./package.json": "./package.json"
