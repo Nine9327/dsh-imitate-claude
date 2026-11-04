@@ -18,18 +18,61 @@ dsh 内置的指令加载器默认已认识 `CLAUDE.md`，但有三样做不到�
 
 ## 安装
 
-本插件是一个标准 **dsh bundle**（`package.json` 里声明 `dsh.bundle.patch`），
-所以安装后会自动进入 profile 的 patch 栈。
+本插件是一个标准 **dsh bundle**，仓库根目录就是可安装的包
+（`package.json` 声明 `dsh.bundle.patch`，`lib/` 已随仓库提交）。
+
+### 从 GitHub 安装（推荐）
 
 ```powershell
-# 构建产物（把各层源码组装成单一可安装包）
-node scripts/build-bundle.mjs
+# 进入你的 profile 目录（桌面端是 desktop）
+cd "$env:USERPROFILE\.dsh\profiles\desktop"
 
-# 装进某个 profile；--preset 同时生成 web 界面需要的 agent preset
-node scripts/install.mjs --profile <你的 profile> --preset
+# 安装
+pnpm add https://github.com/Nine9327/dsh-claude-compat.git
 ```
 
-装上之后重启 dsh，在会话里把 agent preset 切到「兼容模式」。
+**然后必须手动把包名加进 `dsh.profile.bundles`**，这一步不能省：
+
+```jsonc
+// package.json
+"dsh": {
+  "profile": {
+    "bundles": [
+      "@deepseek-ai/dsh-base",
+      "@deepseek-ai/dsh-web-app",
+      // ...
+      "dsh-claude-compat"   // ← 加这一行
+    ]
+  }
+}
+```
+
+> ⚠️ **这是 `/init` 不出现的头号原因。**
+> `pnpm add` 只会写进 `dependencies`，而 dsh **只加载
+> `dsh.profile.bundles` 里列出的包**。只装了依赖没加 bundles，
+> 插件文件在磁盘上、`--dump-config` 里却看不到，命令自然不存在。
+>
+> 桌面端 profile 由 Electron 应用托管，`dsh plugin --profile desktop`
+> 会被 CLI 直接拒绝（`profile "desktop" is managed exclusively by the
+> Electron application`），所以只能像上面这样手工改 `package.json`。
+
+改完重启 dsh。
+
+### 从本地源码安装
+
+```powershell
+node scripts/build-bundle.mjs          # 生成 lib/
+node scripts/install.mjs --profile <name> --preset
+```
+
+`--preset` 会额外生成 web 界面需要的 agent preset。
+
+### 为什么 lib/ 要提交入库
+
+从 git 安装时 pnpm 默认拒绝执行 `prepare` 脚本
+（`ERR_PNPM_GIT_DEP_PREPARE_NOT_ALLOWED`），若 `lib/` 不入库，
+装完就是缺文件的空壳。因此本仓库把构建产物一并提交；
+改源码后请重跑 `node scripts/build-bundle.mjs` 并一起提交。
 
 ### 与 dshmarket 的关系
 
@@ -44,6 +87,7 @@ node scripts/install.mjs --profile <你的 profile> --preset
 |---|---|
 | `package.json` 的 `dsh.bundle.patch` | `./cordis.patch.yml` |
 | patch 里的 `insert` 行 id | `claude-compat-instructions`、`claude-compat-command-init` |
+
 
 （见 `dshmarket/lib/patch.js:264` `rowIdsForPackage`）
 
