@@ -1,0 +1,19 @@
+{
+  "name": "dsh-claude-compat-instructions",
+  "version": "0.1.0",
+  "private": true,
+  "description": "旁挂式 .dsh 指令加载：支持 .dsh/DSH.md、@import 与 rules",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "dependencies": {
+    "dsh-claude-compat-core": "workspace:*"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/dsh-agent-instructions": "*",
+    "@deepseek-ai/dsh-llm": "*"
+  },
+  "license": "MIT"
+}

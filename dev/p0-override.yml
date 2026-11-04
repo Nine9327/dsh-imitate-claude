@@ -1,0 +1,15 @@
+# P0 验证用的 patch 覆盖层：只改配置，不写代码。
+# 目的：确认把 DSH.md 加入候选名后，根目录 DSH.md 能被加载。
+- id: agent-instructions
+  name: '@deepseek-ai/dsh-agent-instructions'
+  config:
+    maxBytes: 65536
+    instructionFileCandidates:
+      - DSH.md
+      - DSH.local.md
+      - AGENTS.md
+      - CLAUDE.md
+    localInstructionFileCandidates:
+      - DSH.local.md
+      - AGENTS.local.md
+      - CLAUDE.local.md

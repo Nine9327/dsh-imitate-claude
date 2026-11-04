@@ -1,0 +1,12 @@
+{
+  "name": "dsh-claude-compat-core",
+  "version": "0.1.0",
+  "private": true,
+  "description": "核心库：命名映射、根探测、@import 展开、rules 收集、/init 脚手架",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "license": "MIT"
+}

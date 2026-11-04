@@ -1,0 +1,18 @@
+# 依赖与本地环境
+node_modules/
+.dev-home/
+.pnpm-store/
+
+# 本地临时文件
+dev/*.mjs
+dev/boot.*
+*.log
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 注意：packages/bundle/lib/ 是**提交入库**的构建产物。
+# 理由：从 git 安装时 pnpm 默认拒绝执行 prepare 脚本，
+# 若不入库，装完会缺少 lib/ 而无法加载。改源码后请重跑
+# `node scripts/build-bundle.mjs` 并一并提交。

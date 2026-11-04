@@ -1,0 +1,18 @@
+{
+  "name": "dsh-claude-compat-command-init",
+  "version": "0.1.0",
+  "private": true,
+  "description": "/init 命令：初始化 .dsh 项目配置目录",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "dependencies": {
+    "dsh-claude-compat-core": "workspace:*"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/dsh-commands": "*"
+  },
+  "license": "MIT"
+}

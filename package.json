@@ -1,0 +1,13 @@
+{
+  "name": "dsh-claude-compat-repo",
+  "private": true,
+  "description": "项目级 .dsh 约定：DSH.md、@import、.dsh/rules 与 /init（Claude Code 兼容）",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build-bundle.mjs",
+    "prepare": "node scripts/build-bundle.mjs",
+    "test": "node test/acceptance.mjs",
+    "install:plugin": "node scripts/install.mjs"
+  },
+  "license": "MIT"
+}

@@ -1,0 +1,26 @@
+# dsh-claude-compat bundle patch
+#
+# 作用：把项目级 .dsh 约定接入 dsh。
+#
+# 注意宿主平面差异（这是本插件最关键的设计约束）：
+#   - 非 web 表面（TUI/headless）：`agent-instructions` 在宿主平面，本 patch 直接接管。
+#   - web 表面：`dsh-web-app` 把 `agent-instructions` 禁用了，加载发生在每个会话
+#     挂载的 agent preset 里。此时本 patch 只注册 /init，指令加载需通过
+#     `dsh-claude-compat sync-preset` 生成的定制 preset 生效（见 README）。
+#
+# 因此这里**不**去 override 内置 `agent-instructions` 行，而是旁插自己的行：
+# 硬 override 会在 web 下作用到一个本就没挂载的行，属于静默无效配置。
+
+- insert:
+    # 项目级指令加载：.dsh/DSH.md、@import 链、.dsh/rules 与 .claude/rules 只读兼容。
+    # 与内置行的区别：允许带目录的候选名，并展开导入。
+    - id: claude-compat-instructions
+      name: 'dsh-claude-compat/instructions'
+      config:
+        maxBytes: 65536
+        enableImports: true
+        maxImportDepth: 5
+
+    # 人类命令 /init：在项目里创建 .dsh/ 骨架。
+    - id: claude-compat-command-init
+      name: 'dsh-claude-compat/command-init'
