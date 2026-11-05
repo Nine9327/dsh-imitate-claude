@@ -19,3 +19,4 @@ Thumbs.db
 # `node scripts/build-bundle.mjs` 并一并提交。
 
 .verify-home/
+dev/commit-msg.txt

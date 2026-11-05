@@ -53,16 +53,19 @@ test('注入内容包含源文件内容（渲染器任一版本可用时）', as
   await withProject(async (root) => {
     const { ctx, listeners } = makeCtx()
     apply(ctx)
-    const injected = []
     const agent = {
       session: { header: { cwd: root } },
-      inbox: { inject: (m) => injected.push(m) },
+      inbox: { nextStep: [] },
     }
+    const claimed = { role: 'user', content: [{ type: 'text', text: 'hi' }] }
 
-    await listeners[0]({ agent, signal: undefined }, async () => ({ kind: 'enter', messages: [] }))
+    const result = await listeners[0](
+      { agent, messages: [claimed], step: 2, signal: undefined },
+      async () => ({ kind: 'enter', messages: [claimed] }),
+    )
 
-    assert.equal(injected.length, 1)
-    const text = injected[0].content[0].text
+    assert.equal(result.messages.length, 2)
+    const text = result.messages[1].content[0].text
     assert.match(text, /VERSION TEST/)
     assert.match(text, /<system-reminder>/)
   })

@@ -5,10 +5,12 @@
  * `renderWorkspaceContext`（公开导出）做预算裁剪与 frame 转义，
  * 自己只接管"发现哪些文件、文件内容是什么"。
  *
- * 关键契约（均已核对 dsh 0.1.5-rc.2 类型定义）：
- *   - `agent/pre-step` 是 waterfall，签名见 dsh-agent `runtime-types.d.ts:313`；
- *   - 工作目录在 `agent.session.header.cwd`（内置插件同款取值方式）；
- *   - 注入用 `agent.inbox.inject(message)`，消息须由 `createUserMessage` 构造。
+ * 关键契约（已核对 dsh 0.1.5 与 0.2.1 源码）：
+ *   - `agent/pre-step` 是 waterfall；工作目录在 `agent.session.header.cwd`；
+ *   - 注入对齐 0.2.1 内置指令插件：在 pre-step 里把消息拼进
+ *     `decision.messages`（`agent.inbox.inject` 在 0.2.1 已移除，不可用）；
+ *   - 渲染复用 `renderWorkspaceContext`（0.1.x）/ `renderAgentInstructions`
+ *     （0.2.x），导出名跨版本探测。
  *
  * @module dsh-imitate-claude-instructions
  */
@@ -226,7 +228,7 @@ export function apply(ctx, config = {}) {
   // 每个 agent 只注入一次：指令是基线，不需要每步重复消耗上下文。
   const injected = new WeakSet()
 
-  ctx.on('agent/pre-step', async ({ agent, signal }, next) => {
+  ctx.on('agent/pre-step', async ({ agent, messages, step, signal }, next) => {
     const decision = await next()
     if (decision.kind === 'reject') return decision
     if (injected.has(agent)) return decision
@@ -249,12 +251,21 @@ export function apply(ctx, config = {}) {
     for (const warning of composed.warnings) ctx.logger?.warn?.(warning)
 
     const message = await createTextUserMessage(composed.text)
-
-    // 走 inbox 注入而不是手改 decision.messages：
-    // 后者绕过投递与日志语义，且与内置插件的去重逻辑冲突。
-    agent.inbox.inject(message)
     injected.add(agent)
 
-    return decision
+    // 注入方式对齐 0.2.1 内置指令插件（dsh-agent-instructions 的 pre-step）：
+    // 把消息插到 decision.messages 里最后一个已领取消息之后。
+    // 不用 agent.inbox.inject —— 该方法在 0.2.1 已移除（曾导致
+    // "agent.inbox.inject is not a function" 打断整轮运行）。
+    const claimed = Array.isArray(messages) ? messages : []
+    // 与内置插件一致：首个空批次（无可领取消息）时不动消息列表，
+    // 留到下一个真正带输入的 step 再注入。
+    if (step === 1 && claimed.length === 0) return decision
+    const lastClaimedIndex = decision.messages.findLastIndex((m) => claimed.includes(m))
+    const entered = decision.messages.toSpliced(lastClaimedIndex + 1, 0, message)
+    return {
+      ...decision,
+      messages: entered,
+    }
   })
 }
