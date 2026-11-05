@@ -17,3 +17,5 @@ Thumbs.db
 # （ERR_PNPM_GIT_DEP_PREPARE_NOT_ALLOWED），若不入库，
 # 装完会缺少 lib/ 而无法加载。改源码后请重跑
 # `node scripts/build-bundle.mjs` 并一并提交。
+
+.verify-home/

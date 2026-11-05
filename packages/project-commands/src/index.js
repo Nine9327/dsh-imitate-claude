@@ -32,8 +32,15 @@ import { COMMANDS_DIR, CONFIG_DIR, findProjectRoot } from 'dsh-imitate-claude-co
 /** 插件名。 */
 export const name = 'imitate-claude-project-commands'
 
-/** 依赖的 cordis 服务。 */
-export const inject = []
+/**
+ * 依赖的 cordis 服务。
+ *
+ * 必须声明 `sessionProjections`：本插件在 `agent/created` 时经
+ * `agent.ctx.plugin()` 创建 agent 作用域子 fiber，dsh 在该作用域解析
+ * 注入链时会读取 sessionProjections。缺声明会抛
+ * `cannot get property "sessionProjections" without inject` 并打断会话创建。
+ */
+export const inject = ['sessionProjections']
 
 /** 命令名合法字符（与 dsh-commands 的语法一致）。 */
 const NAME_RE = /^[a-z0-9][a-z0-9_-]*$/
@@ -214,7 +221,8 @@ export function apply(ctx, config = {}) {
 
     try {
       // agent 作用域挂载：agent.ctx 的子 fiber，agent 销毁时自动回收。
-      ctx.plugin = ctx.plugin // 引用检查
+      // 注意：绝不能对 ctx（cordis 的 Proxy）做任何未声明的属性赋值，
+      // 否则会抛 "cannot set property ... without provide" 并打断会话创建。
       const fiber = agent.ctx.plugin(createCommandPlugin(commands, ctx.logger ?? null))
       void fiber
       mounted.set(agent, { projectRoot, commands })
@@ -287,7 +295,9 @@ export function apply(ctx, config = {}) {
   }
 
   // 插件整体 dispose 时关掉全部 watcher。
-  ctx.effect(() => function* () {
+  // cordis 的 effect 约定：回调返回一个函数作为 disposer，
+  // 或返回可迭代对象收集多个 disposer；不要返回生成器函数。
+  ctx.effect(() => () => {
     for (const entry of watchers.values()) {
       try {
         entry.watcher.close()
